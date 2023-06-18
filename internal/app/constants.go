@@ -1,7 +1,7 @@
 package app
 
 const (
-	Version     = "0.1.0"
+	Version     = "0.1.1"
 	Name        = "goblin"
 	Description = "Goblin is a command-line tool for hashing and reversing hashes using Jenkins' one time hash function."
 )
