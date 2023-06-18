@@ -1,7 +1,7 @@
 <h1 align="center"><code>👺</code> Goblin</h1>
 
 <div align="center">
-    <img src="./.github/banner/goblin.gif" width="300" height="300" alt="Goblin">
+    <img src="./.github/banner/goblin.gif" width="300" alt="Goblin">
 </div>
 
 ## `📖` About
