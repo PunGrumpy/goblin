@@ -1,0 +1,122 @@
+name: Go
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published, created]
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go 1.20
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.20
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v2
+
+      - name: Build
+        run: make build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: bin/*
+
+  publish:
+    needs: build
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: bin/
+
+      - name: Check File Changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            constgo:
+              - 'internal/app/constants.go'
+
+      - name: Check If Version Updated
+        if: steps.changes.outputs.constgo == 'true'
+        run: |
+          VER_FILE=.version
+          OLD_VER=$(cat $VER_FILE)
+          NEW_VER=$(awk -F\" '/Ver/ {print $2}' internal/app/const.go)
+
+          if [[ $OLD_VER != $NEW_VER ]]; then
+            echo "Version updated from $OLD_VER to $NEW_VER"
+            echo $NEW_VER > $VER_FILE
+            git config user.name "PunGrumpy"
+            git config user.email "108584943+PunGrumpy@users.noreply.github.com"
+            git add $VER_FILE
+            git commit -m "🤜🏻 Bump version to $NEW_VER"
+            git push
+          else
+            echo "Version has not been updated"
+            exit 1
+          fi
+
+      - name: Create Tag
+        if: steps.changes.outputs.constgo == 'true'
+        run: |
+          VER_FILE=.version
+          VER=$(cat $VER_FILE)
+          git config user.name "PunGrumpy"
+          git config user.email "108584943+PunGrumpy@users.noreply.github.com""
+          git tag $VER
+          git push origin $VER
+
+      - name: Get New Version
+        id: check-version
+        run: |
+          VER_FILE=.version
+          VER=$(cat $VER_FILE)
+          echo "VERSION=$VER" >> $GITHUB_ENV
+
+      - name: Get SHA256
+        id: sha256
+        run: |
+          SHA256=$(shasum -a 256 bin/dockercolorize-darwin-amd64 | awk '{print $1}')
+          echo "SHA256_MAC=$SHA256" >> $GITHUB_ENV
+          SHA256=$(shasum -a 256 bin/dockercolorize-linux-amd64 | awk '{print $1}')
+          echo "SHA256_LINUX=$SHA256" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: svenstaro/upload-release-action@v2
+        if: ${{ env.VERSION }} != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            # 👺 Goblin ${{ env.VERSION }}
+
+            ## SHA256
+            - macOS: `${{ env.SHA256_MAC }}`
+            - Linux: `${{ env.SHA256_LINUX }}`
+          file: bin/*
+          tag: ${{ env.VERSION }}
+          overwrite: true
+          file_glob: true
