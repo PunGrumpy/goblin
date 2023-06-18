@@ -16,7 +16,7 @@
 go get -u github.com/PunGrumpy/goblin
 ```
 
-### `🍺` Homebrew [Coming Soon]
+### `🍺` Homebrew
 
 ```bash
 brew tap PunGrumpy/formulas
