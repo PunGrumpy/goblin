@@ -63,7 +63,7 @@ jobs:
         run: |
           VER_FILE=.version
           OLD_VER=$(cat $VER_FILE)
-          NEW_VER=$(awk -F\" '/Verion/ {print $2}' internal/app/constants.go)
+          NEW_VER=$(awk -F\" '/Version/ {print $2}' internal/app/constants.go)
 
           if [[ $OLD_VER != $NEW_VER ]]; then
             echo "Version updated from $OLD_VER to $NEW_VER"
