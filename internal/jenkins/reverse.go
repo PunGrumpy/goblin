@@ -1,36 +1,56 @@
 package jenkins
 
-import "github.com/PunGrumpy/goblin/external/character"
+import (
+	"sync"
+
+	"github.com/PunGrumpy/goblin/external/character"
+)
+
+const (
+	hashMultiplier1 = 0x3FFF8001
+	hashMultiplier2 = 0x38E38E39
+	hashXOR1        = 11
+	hashXOR2        = 22
+)
 
 func FindPreimages(target uint32, length int, characters []rune) []string {
 	minChar, maxChar := character.GetCharacterBounds(characters)
 
 	hash := target
-	hash *= 0x3FFF8001
-	hash ^= (hash >> 11) ^ (hash >> 22)
-	hash *= 0x38E38E39
+	hash *= hashMultiplier1
+	hash ^= (hash >> hashXOR1) ^ (hash >> hashXOR2)
+	hash *= hashMultiplier2
 
 	output := make([]string, 0)
 
 	if length > 5 {
-		outputChan := make(chan string)
-		defer close(outputChan)
+		var wg sync.WaitGroup
+		outputChan := make(chan string, len(characters))
 
-		for c := minChar; c <= maxChar; c++ {
-			go reverse(hash, make([]rune, length), length-1, characters, minChar, maxChar, rune(c), outputChan)
+		for _, ch := range characters {
+			wg.Add(1)
+			go func(ch rune) {
+				defer wg.Done()
+				reverse(hash-uint32(ch), make([]rune, length), length-1, characters, minChar, maxChar, ch, outputChan)
+			}(ch)
 		}
+
+		go func() {
+			wg.Wait()
+			close(outputChan)
+		}()
 
 		for partialOutput := range outputChan {
-			output = append([]string{partialOutput}, output...)
+			output = append(output, partialOutput)
 		}
 	} else {
-		reverse(hash, make([]rune, length), length-1, characters, minChar, maxChar, 0, make(chan string, 1) /* outputChan */)
+		reverse(hash, make([]rune, length), length-1, characters, minChar, maxChar, 0, output)
 	}
 
 	return output
 }
 
-func reverse(hash uint32, buffer []rune, depth int, characters []rune, minChar, maxChar rune, forceChar rune, outputChan chan<- string) {
+func reverse(hash uint32, buffer []rune, depth int, characters []rune, minChar, maxChar rune, forceChar rune, output interface{}) {
 	hash ^= (hash >> 6) ^ (hash >> 12) ^ (hash >> 18) ^ (hash >> 24) ^ (hash >> 30)
 	hash *= 0xC00FFC01
 
@@ -41,14 +61,17 @@ func reverse(hash uint32, buffer []rune, depth int, characters []rune, minChar, 
 
 		buffer[0] = rune(hash)
 
-		outputChan <- string(buffer)
-
+		if outputChan, ok := output.(chan string); ok {
+			outputChan <- string(buffer)
+		} else if outputSlice, ok := output.([]string); ok {
+			_ = append(outputSlice, string(buffer))
+		}
 		return
 	}
 
 	recur := func(ch rune) {
 		buffer[depth] = ch
-		reverse((hash - uint32(ch)), buffer, depth-1, characters, minChar, maxChar, 0, outputChan)
+		reverse(hash-uint32(ch), buffer, depth-1, characters, minChar, maxChar, 0, output)
 	}
 
 	if forceChar != 0 {
