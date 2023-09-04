@@ -31,10 +31,10 @@ goblin [command]
 
 ## `📚` Commands
 
-| 💬 Command |      📖 Description      |
-| :--------: | :----------------------: |
-|   `hash`   |  Hash the given string   |
-| `reverse`  | Reverse the given string |
+| 💬 Command |                      📖 Description                       |            🔬 Parameters             |
+| :--------: | :-------------------------------------------------------: | :----------------------------------: |
+|   `hash`   |                   Hash the given string                   |               `string`               |
+| `reverse`  | Reverse the given string and find all possible pre-images | `target`<br>`length`<br>`characters` |
 
 ### `hash`
 
@@ -67,11 +67,22 @@ goblin hash "Hello World"
 ### `reverse`
 
 ```bash
-goblin reverse --target 123456 --length 4
-[*] Possible pre-images of length 4 for hash 123456:
-[+] - abc1
-[+] - def2
-[+] - ghi3
+goblin reverse --target 123456 --length 6
+[*] Possible pre-images of length 6 for hash 123456:
+[+] lBSufP
+[+] @Hu8kL
+[+] TJhHgm
+[+] u6vnjc
+[+] XqZECK
+[+] 0hqlUv
+[+] jPCxyo
+[+] =bvaqU
+[+] =6COLb
+[+] NYqqF8
+[+] ?tO73C
+[+] =bvevi
+[+] <oVNXQ
+[+] KW9fWY
 ```
 
 ## `📜` License
