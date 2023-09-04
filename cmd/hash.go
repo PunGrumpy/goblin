@@ -17,7 +17,7 @@ var hashCmd = &cobra.Command{
 		hash := jenkins.Hash(input)
 
 		if hash != 0 {
-			logger.PrintInfo(fmt.Sprintf("Jenkins' one time hash for \"%s\":", input))
+			logger.PrintInfo(fmt.Sprintf("Jenkins' one at a time hash of \"%s\"", input))
 			logger.PrintSuccess(fmt.Sprintf("Hexadecimal: 0x%X", hash))
 			logger.PrintSuccess(fmt.Sprintf("Decimal: %d", hash))
 			logger.PrintSuccess(fmt.Sprintf("Binary: %b", hash))
