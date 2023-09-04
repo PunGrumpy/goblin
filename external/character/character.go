@@ -1,4 +1,4 @@
-package utils
+package character
 
 func GetCharacterList(characters string) []rune {
 	if characters == "" {

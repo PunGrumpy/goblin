@@ -3,8 +3,9 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/PunGrumpy/goblin/external/character"
+	"github.com/PunGrumpy/goblin/external/logger"
 	"github.com/PunGrumpy/goblin/internal/jenkins"
-	"github.com/PunGrumpy/goblin/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -16,20 +17,20 @@ var reverseCmd = &cobra.Command{
 		length, _ := cmd.Flags().GetInt("length")
 		characters, _ := cmd.Flags().GetString("characters")
 
-		characterList := utils.GetCharacterList(characters)
+		characterList := character.GetCharacterList(characters)
 		preimages := jenkins.FindPreimages(uint32(targetHash), length, characterList)
 
 		if len(preimages) == 0 {
-			utils.PrintError("No pre-images found")
+			logger.PrintError("No pre-images found")
 			return
 		}
 
-		utils.PrintInfo(fmt.Sprintf("Possible pre-images of length %d for hash %d:", length, targetHash))
+		logger.PrintInfo(fmt.Sprintf("Possible pre-images of length %d for hash %d:", length, targetHash))
 		for _, preimage := range preimages {
 			if preimage != "" {
-				utils.PrintSuccess(preimage)
+				logger.PrintSuccess(preimage)
 			} else {
-				utils.PrintError("No pre-images found")
+				logger.PrintError("No pre-images found")
 			}
 		}
 	},
@@ -41,11 +42,11 @@ func init() {
 	reverseCmd.Flags().String("characters", "", "A list of characters to try (default is alphanumeric)")
 
 	if err := reverseCmd.MarkFlagRequired("target"); err != nil {
-		utils.PrintError(err.Error())
+		logger.PrintError(err.Error())
 	}
 
 	if err := reverseCmd.MarkFlagRequired("length"); err != nil {
-		utils.PrintError(err.Error())
+		logger.PrintError(err.Error())
 	}
 
 	rootCmd.AddCommand(reverseCmd)

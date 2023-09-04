@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/PunGrumpy/goblin/external/logger"
 	"github.com/PunGrumpy/goblin/internal/jenkins"
-	"github.com/PunGrumpy/goblin/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -17,12 +17,12 @@ var hashCmd = &cobra.Command{
 		hash := jenkins.Hash(input)
 
 		if hash != 0 {
-			utils.PrintInfo(fmt.Sprintf("Jenkins' one time hash for \"%s\":", input))
-			utils.PrintSuccess(fmt.Sprintf("Hexadecimal: 0x%X", hash))
-			utils.PrintSuccess(fmt.Sprintf("Decimal: %d", hash))
-			utils.PrintSuccess(fmt.Sprintf("Binary: %b", hash))
+			logger.PrintInfo(fmt.Sprintf("Jenkins' one time hash for \"%s\":", input))
+			logger.PrintSuccess(fmt.Sprintf("Hexadecimal: 0x%X", hash))
+			logger.PrintSuccess(fmt.Sprintf("Decimal: %d", hash))
+			logger.PrintSuccess(fmt.Sprintf("Binary: %b", hash))
 		} else {
-			utils.PrintError("No hash found")
+			logger.PrintError("No hash found")
 		}
 	},
 }

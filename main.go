@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/PunGrumpy/goblin/cmd"
-	"github.com/PunGrumpy/goblin/utils"
+	"github.com/PunGrumpy/goblin/external/logger"
 )
 
 func main() {
 	if err := cmd.Execute(); err != nil {
-		utils.PrintError(err.Error())
+		logger.PrintError(err.Error())
 	}
 }

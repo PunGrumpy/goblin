@@ -1,9 +1,9 @@
 package jenkins
 
-import "github.com/PunGrumpy/goblin/utils"
+import "github.com/PunGrumpy/goblin/external/character"
 
 func FindPreimages(target uint32, length int, characters []rune) []string {
-	minChar, maxChar := utils.GetCharacterBounds(characters)
+	minChar, maxChar := character.GetCharacterBounds(characters)
 
 	hash := target
 	hash *= 0x3FFF8001
