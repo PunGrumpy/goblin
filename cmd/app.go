@@ -12,5 +12,6 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() error {
+	rootCmd.SilenceErrors = true
 	return rootCmd.Execute()
 }
