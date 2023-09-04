@@ -11,10 +11,6 @@ var rootCmd = &cobra.Command{
 	Version: app.Version,
 }
 
-func init() {
-	rootCmd.AddCommand(hashCmd)
-}
-
 func Execute() error {
 	return rootCmd.Execute()
 }
