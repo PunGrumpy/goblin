@@ -11,7 +11,7 @@ import (
 )
 
 func GenerateCompletion(cmd *cobra.Command) {
-	zshCompletionPath := "~/.zsh/completions/"
+	zshCompletionPath := "/usr/local/share/zsh/site-functions/"
 	bashCompletionPath := "/etc/bash_completion.d/"
 	fishCompletionPath := "~/.config/fish/completions/"
 
