@@ -11,18 +11,10 @@ import (
 )
 
 func GenerateCompletion(cmd *cobra.Command) {
-	zshCompletionPath := "/usr/local/share/zsh/site-functions/"
 	bashCompletionPath := "/etc/bash_completion.d/"
 	fishCompletionPath := "~/.config/fish/completions/"
 
 	switch GetShellType() {
-	case "zsh":
-		if err := os.MkdirAll(zshCompletionPath, 0755); err != nil {
-			logger.PrintError(err.Error())
-		}
-		if err := cmd.GenZshCompletionFile(filepath.Join(zshCompletionPath, app.Name+".zsh")); err != nil {
-			logger.PrintError(err.Error())
-		}
 	case "bash":
 		if err := os.MkdirAll(bashCompletionPath, 0755); err != nil {
 			logger.PrintError(err.Error())
@@ -44,8 +36,6 @@ func GetShellType() string {
 	shell := os.Getenv("SHELL")
 	if strings.Contains(shell, "bash") {
 		return "bash"
-	} else if strings.Contains(shell, "zsh") {
-		return "zsh"
 	} else if strings.Contains(shell, "fish") {
 		return "fish"
 	}
