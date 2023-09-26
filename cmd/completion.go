@@ -29,11 +29,17 @@ var completionCmd = &cobra.Command{
 
 		switch shell {
 		case "bash":
-			rootCmd.GenBashCompletionFile(home + "/.bash_completion")
+			if err := rootCmd.GenBashCompletionFile(home + "/.bash_completion"); err != nil {
+				logger.PrintError("Error generating bash completion file")
+			}
 		case "zsh":
-			rootCmd.GenZshCompletionFile(home + "/.zsh_completion")
+			if err := rootCmd.GenZshCompletionFile(home + "/.zshrc"); err != nil {
+				logger.PrintError("Error generating zsh completion file")
+			}
 		case "fish":
-			rootCmd.GenFishCompletionFile(home+"/.config/fish/completions/goblin.fish", true)
+			if err := rootCmd.GenFishCompletionFile(home+"/.config/fish/completions/goblin.fish", true); err != nil {
+				logger.PrintError("Error generating fish completion file")
+			}
 		default:
 			logger.PrintError("Unsupported shell")
 		}
