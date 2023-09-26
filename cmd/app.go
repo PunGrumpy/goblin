@@ -11,6 +11,9 @@ var rootCmd = &cobra.Command{
 	Version:          app.Version,
 	SilenceErrors:    true,
 	TraverseChildren: true,
+	CompletionOptions: cobra.CompletionOptions{
+		DisableDefaultCmd: true,
+	},
 }
 
 func Execute() error {
