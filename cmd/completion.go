@@ -21,25 +21,38 @@ func detectShell() string {
 }
 
 var completionCmd = &cobra.Command{
-	Use:   "completion",
-	Short: "Generate completion script and auto detect shell",
+	Use:       "completions",
+	Short:     "Generate completion script and auto detect shell",
+	Args:      cobra.MinimumNArgs(0),
+	ValidArgs: []string{"bash", "zsh", "fish"},
 	Run: func(cmd *cobra.Command, args []string) {
-		shell := detectShell()
+		var shell string
+		if len(args) != 0 {
+			shell = args[0]
+		} else {
+			shell = detectShell()
+		}
 		home := os.Getenv("HOME")
 
 		switch shell {
-		case "bash":
+		case cmd.ValidArgs[0]:
 			if err := rootCmd.GenBashCompletionFile(home + "/.bash_completion"); err != nil {
 				logger.PrintError("Error generating bash completion file")
+				return
 			}
-		case "zsh":
+			logger.PrintSuccess("Bash completion file generated into ~/.bash_completion")
+		case cmd.ValidArgs[1]:
 			if err := rootCmd.GenZshCompletionFile(home + "/.zshrc"); err != nil {
 				logger.PrintError("Error generating zsh completion file")
+				return
 			}
-		case "fish":
+			logger.PrintSuccess("Zsh completion file generated into ~/.zshrc")
+		case cmd.ValidArgs[2]:
 			if err := rootCmd.GenFishCompletionFile(home+"/.config/fish/completions/goblin.fish", true); err != nil {
 				logger.PrintError("Error generating fish completion file")
+				return
 			}
+			logger.PrintSuccess("Fish completion file generated into ~/.config/fish/completions/goblin.fish")
 		default:
 			logger.PrintError("Unsupported shell")
 		}
